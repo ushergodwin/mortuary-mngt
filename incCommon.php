@@ -52,7 +52,8 @@ function getTableList($skip_authentication = false)
 		'rooms' => array('Rooms', '', 'resources/table_icons/building.png', 'None'),
 		'beds' => array('Beds', '', 'resources/table_icons/tag_green.png', 'None'),
 		'bill' => array('Bill', '', 'resources/table_icons/account_balances.png', 'None'),
-		'invoices' => array('Invoices', '', 'resources/table_icons/card_money.png', 'None')
+		'invoices' => array('Invoices', '', 'resources/table_icons/card_money.png', 'None'),
+		'reports' => array('Reports', '', 'resources/table_icons/card_money.png', 'None')
 	);
 	if ($skip_authentication || getLoggedAdmin()) return $arrTables;
 
@@ -364,67 +365,81 @@ function htmlUserBar()
 	$home_page = (basename($_SERVER['PHP_SELF']) == 'index.php' ? true : false);
 
 ?>
-	<nav class="navbar navbar-default navbar-fixed-top hidden-print" role="navigation">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-			<!-- application title is obtained from the name besides the yellow database icon in AppGini, use underscores for spaces -->
-			<a class="navbar-brand" href="<?php echo PREPEND_PATH; ?>index.php"><i class="glyphicon glyphicon-home"></i> Kampala City Mortuary</a>
-		</div>
-		<div class="collapse navbar-collapse">
-			<ul class="nav navbar-nav">
-				<?php if (!$home_page) { ?>
-					<?php echo NavMenus(); ?>
-				<?php } ?>
-			</ul>
+<nav class="navbar navbar-default navbar-fixed-top hidden-print" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <!-- application title is obtained from the name besides the yellow database icon in AppGini, use underscores for spaces -->
+        <a class="navbar-brand" href="<?php echo PREPEND_PATH; ?>index.php"><i class="glyphicon glyphicon-home"></i>
+            Kampala City Mortuary</a>
+    </div>
+    <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+            <?php if (!$home_page) { ?>
+            <?php echo NavMenus(); ?>
+            <?php } ?>
+        </ul>
 
-			<?php if (getLoggedAdmin()) { ?>
-				<ul class="nav navbar-nav">
-					<a href="<?php echo PREPEND_PATH; ?>admin/pageHome.php" class="btn btn-danger navbar-btn hidden-xs" title="<?php echo html_attr($Translation['admin area']); ?>"><i class="glyphicon glyphicon-cog"></i> <?php echo $Translation['admin area']; ?></a>
-					<a href="<?php echo PREPEND_PATH; ?>admin/pageHome.php" class="btn btn-danger navbar-btn visible-xs btn-lg" title="<?php echo html_attr($Translation['admin area']); ?>"><i class="glyphicon glyphicon-cog"></i> <?php echo $Translation['admin area']; ?></a>
-				</ul>
-			<?php } ?>
+        <?php if (getLoggedAdmin()) { ?>
+        <ul class="nav navbar-nav">
+            <a href="<?php echo PREPEND_PATH; ?>admin/pageHome.php" class="btn btn-danger navbar-btn hidden-xs"
+                title="<?php echo html_attr($Translation['admin area']); ?>"><i class="glyphicon glyphicon-cog"></i>
+                <?php echo $Translation['admin area']; ?></a>
+            <a href="<?php echo PREPEND_PATH; ?>admin/pageHome.php" class="btn btn-danger navbar-btn visible-xs btn-lg"
+                title="<?php echo html_attr($Translation['admin area']); ?>"><i class="glyphicon glyphicon-cog"></i>
+                <?php echo $Translation['admin area']; ?></a>
+        </ul>
+        <?php } ?>
 
-			<?php if (!$_GET['signIn'] && !$_GET['loginFailed']) { ?>
-				<?php if (getLoggedMemberID() == $adminConfig['anonymousMember']) { ?>
-					<p class="navbar-text navbar-right">&nbsp;</p>
-					<a href="<?php echo PREPEND_PATH; ?>index.php?signIn=1" class="btn btn-success navbar-btn navbar-right"><?php echo $Translation['sign in']; ?></a>
-					<p class="navbar-text navbar-right">
-						<?php echo $Translation['not signed in']; ?>
-					</p>
-				<?php } else { ?>
-					<ul class="nav navbar-nav navbar-right hidden-xs" style="min-width: 330px;">
-						<a class="btn navbar-btn btn-default" href="<?php echo PREPEND_PATH; ?>index.php?signOut=1"><i class="glyphicon glyphicon-log-out"></i> <?php echo $Translation['sign out']; ?></a>
-						<p class="navbar-text">
-							<?php echo $Translation['signed as']; ?> <strong><a href="<?php echo PREPEND_PATH; ?>membership_profile.php" class="navbar-link"><?php echo getLoggedMemberID(); ?></a></strong>
-						</p>
-					</ul>
-					<ul class="nav navbar-nav visible-xs">
-						<a class="btn navbar-btn btn-default btn-lg visible-xs" href="<?php echo PREPEND_PATH; ?>index.php?signOut=1"><i class="glyphicon glyphicon-log-out"></i> <?php echo $Translation['sign out']; ?></a>
-						<p class="navbar-text text-center">
-							<?php echo $Translation['signed as']; ?> <strong><a href="<?php echo PREPEND_PATH; ?>membership_profile.php" class="navbar-link"><?php echo getLoggedMemberID(); ?></a></strong>
-						</p>
-					</ul>
-					<script>
-						/* periodically check if user is still signed in */
-						setInterval(function() {
-							$j.ajax({
-								url: '<?php echo PREPEND_PATH; ?>ajax_check_login.php',
-								success: function(username) {
-									if (!username.length) window.location = '<?php echo PREPEND_PATH; ?>index.php?signIn=1';
-								}
-							});
-						}, 60000);
-					</script>
-				<?php } ?>
-			<?php } ?>
-		</div>
-	</nav>
-	<?php
+        <?php if (!$_GET['signIn'] && !$_GET['loginFailed']) { ?>
+        <?php if (getLoggedMemberID() == $adminConfig['anonymousMember']) { ?>
+        <p class="navbar-text navbar-right">&nbsp;</p>
+        <a href="<?php echo PREPEND_PATH; ?>index.php?signIn=1"
+            class="btn btn-success navbar-btn navbar-right"><?php echo $Translation['sign in']; ?></a>
+        <p class="navbar-text navbar-right">
+            <?php echo $Translation['not signed in']; ?>
+        </p>
+        <?php } else { ?>
+        <ul class="nav navbar-nav navbar-right hidden-xs" style="min-width: 330px;">
+            <a class="btn navbar-btn btn-default" href="<?php echo PREPEND_PATH; ?>index.php?signOut=1"><i
+                    class="glyphicon glyphicon-log-out"></i> <?php echo $Translation['sign out']; ?></a>
+            <p class="navbar-text">
+                <?php echo $Translation['signed as']; ?> <strong><a
+                        href="<?php echo PREPEND_PATH; ?>membership_profile.php"
+                        class="navbar-link"><?php echo getLoggedMemberID(); ?></a></strong>
+            </p>
+        </ul>
+        <ul class="nav navbar-nav visible-xs">
+            <a class="btn navbar-btn btn-default btn-lg visible-xs"
+                href="<?php echo PREPEND_PATH; ?>index.php?signOut=1"><i class="glyphicon glyphicon-log-out"></i>
+                <?php echo $Translation['sign out']; ?></a>
+            <p class="navbar-text text-center">
+                <?php echo $Translation['signed as']; ?> <strong><a
+                        href="<?php echo PREPEND_PATH; ?>membership_profile.php"
+                        class="navbar-link"><?php echo getLoggedMemberID(); ?></a></strong>
+            </p>
+        </ul>
+        <script>
+        /* periodically check if user is still signed in */
+        setInterval(function() {
+            $j.ajax({
+                url: '<?php echo PREPEND_PATH; ?>ajax_check_login.php',
+                success: function(username) {
+                    if (!username.length) window.location =
+                        '<?php echo PREPEND_PATH; ?>index.php?signIn=1';
+                }
+            });
+        }, 60000);
+        </script>
+        <?php } ?>
+        <?php } ?>
+    </div>
+</nav>
+<?php
 
 	$html = ob_get_contents();
 	ob_end_clean();
@@ -1196,14 +1211,16 @@ function get_home_links($homeLinks, $default_classes, $tgroup = '')
 
 		if ($memberInfo['admin'] || @in_array($memberInfo['group'], $link['groups']) || @in_array('*', $link['groups'])) {
 	?>
-			<div class="col-xs-12 <?php echo $link['grid_column_classes']; ?>">
-				<div class="panel <?php echo $link['panel_classes']; ?>">
-					<div class="panel-body">
-						<a class="btn btn-block btn-lg <?php echo $link['link_classes']; ?>" title="<?php echo preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", html_attr(strip_tags($link['description']))); ?>" href="<?php echo $link['url']; ?>"><?php echo ($link['icon'] ? '<img src="' . $link['icon'] . '">' : ''); ?><strong><?php echo $link['title']; ?></strong></a>
-						<div class="panel-body-description"><?php echo $link['description']; ?></div>
-					</div>
-				</div>
-			</div>
+<div class="col-xs-12 <?php echo $link['grid_column_classes']; ?>">
+    <div class="panel <?php echo $link['panel_classes']; ?>">
+        <div class="panel-body">
+            <a class="btn btn-block btn-lg <?php echo $link['link_classes']; ?>"
+                title="<?php echo preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", html_attr(strip_tags($link['description']))); ?>"
+                href="<?php echo $link['url']; ?>"><?php echo ($link['icon'] ? '<img src="' . $link['icon'] . '">' : ''); ?><strong><?php echo $link['title']; ?></strong></a>
+            <div class="panel-body-description"><?php echo $link['description']; ?></div>
+        </div>
+    </div>
+</div>
 <?php
 		}
 	}
